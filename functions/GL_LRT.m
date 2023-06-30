@@ -38,13 +38,14 @@ while ~isConverge && ~isMaxIter
 
     L_old = L;
     X_old = X;
+
     % Optimizing L a.k.a. A
     DX = D(X);
     M1 = DX*DX';
     M2 = repmat(diag(M1), 1, n);
     M = M2 + M2' - 2*M1;
     % M = M./T;
-
+    
     tic
     A = SolveSubA(M, alpha, beta);
     toc
@@ -52,10 +53,9 @@ while ~isConverge && ~isMaxIter
     L = diag(sum(A)) - A;
 
     % Optimizing X
-    % X = solveSubX(Y, L, R, B, alpha, k);
     if options.LowRankEst
         tic
-        X = updateX_SVD(X, D(Y), L, R, B, alpha, k, solver = 'GPM');
+            % X = solveSubX(Y, L, R, B, alpha, k);
         toc
     end
     
