@@ -12,7 +12,6 @@ arguments
 end
 alpha = options.alpha/2;
 beta = options.beta;
-debug = options.debug;
 
 % k is the maximum rank of estimated signal matrix X
 X = Y;
@@ -35,7 +34,8 @@ isConverge = false;
 isMaxIter = false;
 
 while ~isConverge && ~isMaxIter
-
+    disp("============================================");
+    disp("Iter: " + num2str(iter));
     L_old = L;
     X_old = X;
 
@@ -44,7 +44,7 @@ while ~isConverge && ~isMaxIter
     M1 = DX*DX';
     M2 = repmat(diag(M1), 1, n);
     M = M2 + M2' - 2*M1;
-    
+    disp("Starting Graph Refinement...");
     tic
     A = SolveSubA(M, alpha, beta);
     toc
@@ -52,7 +52,9 @@ while ~isConverge && ~isMaxIter
     L = diag(sum(A)) - A;
 
     % Optimizing X
+    
     if options.LowRankEst
+        disp("Starting Low Rank Component Estimation...");
         tic
             X = SolveSubX(Y, R, B, L, alpha, k);
         toc
