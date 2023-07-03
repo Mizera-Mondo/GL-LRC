@@ -10,7 +10,7 @@ arguments
     options.LowRankEst = true;
     options.debug = false;
 end
-alpha = options.alpha;
+alpha = options.alpha/2;
 beta = options.beta;
 debug = options.debug;
 
@@ -44,7 +44,6 @@ while ~isConverge && ~isMaxIter
     M1 = DX*DX';
     M2 = repmat(diag(M1), 1, n);
     M = M2 + M2' - 2*M1;
-    % M = M./T;
     
     tic
     A = SolveSubA(M, alpha, beta);
@@ -55,7 +54,7 @@ while ~isConverge && ~isMaxIter
     % Optimizing X
     if options.LowRankEst
         tic
-            % X = solveSubX(Y, L, R, B, alpha, k);
+            X = SolveSubX(Y, R, B, L, alpha, k);
         toc
     end
     
