@@ -16,7 +16,7 @@ B = zeros(signalLength);
 B(2:end, 2:end) = eye(signalLength - 1);
 D = @(X) X - R*X*B;
 alpha = 0.1;
-beta = 200;
+beta = 300;
 
 % Estimation
 [X, Lest] = GL_LRT(Y, R, usedEigNum, alpha = alpha, beta = beta);
