@@ -27,7 +27,7 @@ A = A + A';
 A = n*A./sum(A, 'all');
 L = diag(sum(A)) - A;
 
-tol = 1e-2;
+tol = 1e-3;
 iter = 1;
 maxIter = 1000;
 isConverge = false;

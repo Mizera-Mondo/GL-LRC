@@ -28,6 +28,10 @@ Lr = diag(sum(Ar)) - Ar;
 % Estimation
 [X, Lest] = GL_LRT(Y, R, usedEigNum, alpha = alpha, beta = beta, LowRankEst = false);
 
+DX = D(X);
+M1 = DX*DX';
+M2 = repmat(diag(M1), 1, nodeNum);
+M = M2 + M2' - 2*M1;
 
 
 % Results
