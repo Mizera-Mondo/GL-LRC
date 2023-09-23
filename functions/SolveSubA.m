@@ -1,5 +1,5 @@
 function A = SolveSubA(M, alpha, beta, options)
-%solveSubA solve the sub-problem ||A||_F^2 + alpha/beta*Tr{AM}
+%solveSubA solve the sub-problem ||A||_F^2 + ||A*1||_2^2 + alpha/(2*beta)*Tr{AM}
 arguments
     M, alpha, beta double
     options.method = 'quadprog'
@@ -14,8 +14,9 @@ if strcmp(options.method, 'quadprog')
     bie = [];
 
     % Construct target function for vectorized A
-    H = eye(n^2);
-    f = alpha/beta*mat2vec(M);
+    U = kron(ones(1, n), eye(n));
+    H = eye(n^2) + U'*U;
+    f = alpha/(2*beta)*mat2vec(M);
 
     % Construct constraints for vectorized A
 
@@ -54,7 +55,7 @@ elseif strcmp(options.method, 'CVX')
     ze = zeros(n, 1);
     cvx_begin quiet
         variable A(n, n) symmetric nonnegative
-        minimize square_pos(norm(A, 'fro')) + alpha/beta*trace(A*M)
+        minimize square_pos(norm(A, 'fro')) + square_pos(norm(A*ones(1, n), 'fro')) + alpha/(2*beta)*trace(A*M)
         subject to
             diag(A) == ze;
             on'*A*on == n;
