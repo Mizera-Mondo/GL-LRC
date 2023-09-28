@@ -16,7 +16,7 @@ if strcmp(options.method, 'quadprog')
     % Construct target function for vectorized A
     U = kron(ones(1, n), eye(n));
     H = eye(n^2) + U'*U;
-    f = alpha/(2*beta)*mat2vec(M);
+    f = alpha/beta*mat2vec(M);
 
     % Construct constraints for vectorized A
 

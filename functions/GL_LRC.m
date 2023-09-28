@@ -1,5 +1,5 @@
-function [X, L, A] = GL_LRT(Y, R, k, options)
-%LR-DGI Solve 1/2||D(Y - X)||_F^2 + alpha*Tr{D(X)'*L*D(X)} +
+function [X, L, A] = GL_LRC(Y, R, k, options)
+%LR-LRC Solve 1/2||D(Y - X)||_F^2 + alpha*Tr{D(X)'*L*D(X)} +
 %beta||L||_F^2
 
 arguments
@@ -29,35 +29,49 @@ L = diag(sum(A)) - A;
 
 tol = 1e-3;
 iter = 1;
-maxIter = 1000;
+maxIter = 100;
 isConverge = false;
 isMaxIter = false;
 
 while ~isConverge && ~isMaxIter
-    disp("============================================");
-    disp("Iter: " + num2str(iter));
+
+    if options.debug
+        disp("============================================");
+        disp("Iter: " + num2str(iter));
+    end
+
     L_old = L;
     X_old = X;
 
     % Optimizing L a.k.a. A
     DX = D(X);
-    M1 = DX*DX';
-    M2 = repmat(diag(M1), 1, n);
-    M = M2 + M2' - 2*M1;
-    disp("Starting Graph Refinement...");
-    tic
-    A = SolveSubA(M, alpha, beta);
-    toc
+    M = genM(DX);
+    
+    if options.debug
+        disp("Starting Graph Refinement...");
+        tic
+        A = SolveSubA(M, alpha, beta);
+        toc
+
+    else
+        A = SolveSubA(M, alpha, beta);
+    end
+
+
 
     L = diag(sum(A)) - A;
 
     % Optimizing X
     
     if options.LowRankEst
+        if options.debug
         disp("Starting Low Rank Component Estimation...");
         tic
             X = SolveSubX(Y, R, B, L, alpha, k);
         toc
+        else
+            X = SolveSubX(Y, R, B, L, alpha, k);
+        end
     end
     
     isConverge = norm(L_old - L, 'fro')/norm(L_old, 'fro') < tol ...
