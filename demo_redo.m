@@ -2,21 +2,22 @@
 currentPath = pwd;
 addpath(genpath(currentPath));
 % Initialization
-nodeNum = 30;
-usedEigNum = 25;
+nodeNum = 15;
+usedEigNum = 5;
 signalLength = 100;
-noiseCov = 0;
+noiseCov = 0.5;
 rPertubation = 0;
 threA = 1e-3;
 % Signal Generation
-[Y, A, R] = genRandomSignal(nodeNum, usedEigNum, signalLength, noiseCov, rPertubation);
+[A, L] = genRandomGraph(nodeNum);
 
-L = diag(sum(A)) - A;
+[Y, R] = genRandomSignal(L, usedEigNum, signalLength, noiseCov, rPertubation);
+
 B = zeros(signalLength);
 B(1:end - 1, 2:end) = eye(signalLength - 1);
 D = @(X) X - R*X*B;
 alpha = 0.1;
-beta = 5;
+beta = 10.5;
 
 % For Debug: The Target Function
 targ1 = @(X, L) alpha*trace((D(X))'*L*D(X));
@@ -28,7 +29,7 @@ Ar = Ar./sum(Ar, "all")*nodeNum;
 Lr = diag(sum(Ar)) - Ar;
 
 % Estimation
-[X, Lest] = GL_LRC(Y, R, usedEigNum, alpha = alpha, beta = beta, LowRankEst = false);
+[X, Lest] = GL_LRC(Y, R, usedEigNum, alpha = alpha, beta = beta, debug = true, LowRankEst = true);
 
 DX = D(X);
 M = genM(DX);

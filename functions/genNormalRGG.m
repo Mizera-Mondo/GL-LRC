@@ -10,7 +10,9 @@ function [A, L] = genNormalRGG(nodeNum, options)
     reCalcWeight = @(M) exp(-1/2*sigma^-2*M.^2);
     [~, D] = random_geometric_graph(nodeNum, options.dimen, options.thre);
     A = reCalcWeight(D);
+    % A is natrually symmetric
     A(A > options.thre) = 0;
+    A = A./sum(A, "all")*nodeNum;
     L = diag(sum(A)) - A;
 end
 
